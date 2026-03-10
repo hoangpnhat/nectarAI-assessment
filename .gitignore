@@ -16,6 +16,7 @@ build/
 .env
 .env.local
 *.env
+!.env.example
 
 # IDEs
 .vscode/
@@ -37,6 +38,10 @@ generated_images/
 # Logs
 *.log
 logs/
+backend/backend.log
+
+# Keep sample outputs for assessment
+!outputs/samples/*.png
 
 # Temporary files
 *.tmp
@@ -48,6 +53,10 @@ logs/
 *.pth
 *.bin
 
-# ComfyUI
+# ComfyUI (full installation - too large for git)
+ComfyUI/
+civitai-models-cli/
+
+# Workflow outputs
 workflows/*.png
 workflows/output/

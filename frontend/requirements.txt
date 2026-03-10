@@ -1,0 +1,4 @@
+# Streamlit Frontend (compatible with older versions)
+streamlit>=1.10.0
+requests==2.31.0
+pillow==10.2.0

@@ -42,29 +42,37 @@ InstantIDFaceAnalysis (Node ID: 11)
 - Purpose: Load InsightFace model
 - Inputs: provider (CPU/CUDA)
 - Outputs: FACEANALYSIS
+
+ControlNetLoader (Node ID: 16)
+- Purpose: Load InstantID ControlNet
+- Inputs: control_net_name (controlnet.safetensors)
+- Outputs: CONTROL_NET
 ```
 
 #### 3. Face Processing
 
 ```
-InstantIDFaceEmbedding (Node ID: 12)
-- Purpose: Extract face embedding from reference
+ApplyInstantID (Node ID: 12)
+- Purpose: Extract face embedding AND apply InstantID to model in one step
 - Inputs:
-  - face_analysis (from node 11)
-  - reference_image (from node 1)
-- Outputs: FACE_EMBEDDING
-
-ApplyInstantID (Node ID: 13)
-- Purpose: Apply InstantID to model
-- Inputs:
-  - instantid_model (from node 10)
-  - face_embedding (from node 12)
+  - instantid (from node 10)
+  - insightface (from node 11)
+  - control_net (from node 16)
+  - image (reference face image, from node 1)
   - model (from node 4)
   - positive (from node 6)
-  - ip_adapter_scale: 0.85
+  - negative (from node 7)
+  - ip_weight: 0.85
   - cn_strength: 0.6
-- Outputs: MODEL (modified), POSITIVE (modified)
+  - start_at: 0.0
+  - end_at: 1.0
+- Outputs: MODEL (modified), positive (modified), negative (modified)
 ```
+
+> ⚠️ **Note**: There is NO separate `InstantIDFaceEmbedding` node in `ComfyUI_InstantID`.
+> Face embedding extraction is handled internally by `ApplyInstantID` using the
+> `InsightFace` model passed via the `insightface` input.
+> You also need a `ControlNetLoader` node pointing to `controlnet.safetensors`.
 
 #### 4. Image Generation
 
@@ -72,9 +80,9 @@ ApplyInstantID (Node ID: 13)
 KSampler (Node ID: 3)
 - Purpose: Main diffusion sampling
 - Inputs:
-  - model (from node 13)
-  - positive (from node 13)
-  - negative (from node 7)
+  - model (from node 12)
+  - positive (from node 12)
+  - negative (from node 12)
   - latent_image (from node 5)
   - seed: random
   - steps: 30
@@ -185,7 +193,7 @@ workflow["3"]["inputs"]["cfg"] = settings["cfg_scale"]
 workflow["3"]["inputs"]["seed"] = random.randint(0, 2**32)
 
 # Update InstantID strength
-workflow["13"]["inputs"]["ip_adapter_scale"] = settings["instantid_strength"]
+workflow["12"]["inputs"]["ip_weight"] = settings["instantid_strength"]
 
 # Update resolution
 workflow["5"]["inputs"]["width"] = settings["width"]

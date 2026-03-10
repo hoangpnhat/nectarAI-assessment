@@ -42,18 +42,24 @@ cd /workspace/ComfyUI
 python main.py --listen 0.0.0.0 --port 8188
 ```
 
-### Step 2: Build ComfyUI Workflow (1 hour)
+### Step 2: Load ComfyUI Workflow (5 minutes) ✅
+
+**GOOD NEWS**: Workflow đã sẵn sàng!
 
 1. Access ComfyUI at your RunPod URL
-2. Load default SDXL workflow
-3. Add these nodes (right-click → Add Node):
-   - `InstantIDModelLoader`
-   - `InstantIDFaceAnalysis`
-   - `InstantIDFaceEmbedding`
-   - `ApplyInstantID`
-4. Connect as per [`workflows/workflow_template_notes.md`](workflows/workflow_template_notes.md)
-5. Test with a face photo
-6. Export both workflow formats
+2. Download [`workflows/workflow_api.json`](workflows/workflow_api.json)
+3. In ComfyUI: Click **Load** → Select `workflow_api.json`
+4. Upload reference image to Node 1 (LoadImage)
+5. Click **Queue Prompt** to test
+6. Done! ✅
+
+**What's included**:
+- ✅ Pony Diffusion XL v6 (best for NSFW)
+- ✅ SDXL VAE (separate, better quality)
+- ✅ InstantID (ip_weight: 0.75, cn_strength: 0.5)
+- ✅ Optimized settings (steps: 30, cfg: 7.0)
+- ✅ Score prompts for Pony
+- ✅ 1.5x upscaling
 
 ### Step 3: Setup Local Environment (30 min)
 
@@ -136,19 +142,23 @@ git push origin main
 
 ## 🔥 Pro Tips
 
-1. **Save Time**: Use RTX 4090, not A6000 (same quality, cheaper)
-2. **Face Consistency**: Set InstantID strength to 0.85-0.9
-3. **NSFW Quality**: Use 35 steps instead of 30, add anatomy LoRA
+1. **Save Time**: Workflow đã ready - chỉ cần load và test!
+2. **Face Consistency**: Current settings (ip_weight: 0.75) đã optimized
+3. **NSFW Quality**: Pony XL v6 + 30-35 steps = excellent anatomy
 4. **Generation Speed**: Keep models in VRAM, don't reload
 5. **Cost**: Stop RunPod when not using (~$15-20 total expected)
+6. **VAE Quality**: Using separate SDXL VAE for better colors
 
 ## 🆘 Quick Troubleshooting
 
-**ComfyUI won't start**: Check port 8188 is exposed in RunPod
-**Backend can't connect**: Use public RunPod URL, not localhost
-**Face not consistent**: Increase InstantID strength to 0.9-0.95
+**Weird colors/artifacts**: Make sure sdxl_vae.safetensors is loaded (Node 21)
+**Face not consistent**: Increase ip_weight from 0.75 to 0.80-0.85
+**Abstract/noise output**: Check VAE file exists, try lowering cfg to 6.5
 **Out of memory**: Reduce resolution to 768x768
-**Slow generation**: Use DPM++ 2M Karras sampler, 25-30 steps
+**Slow generation**: Already optimized at 30 steps
+**Model not found**: Check Pony XL filename is exact: `ponyDiffusionV6XL_v6StartWithThisOne.safetensors`
+
+See [`workflows/TROUBLESHOOTING.md`](workflows/TROUBLESHOOTING.md) for detailed fixes!
 
 ## 📚 Full Documentation
 
